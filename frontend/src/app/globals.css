@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+html, body { background: #070A0F; color: #D7DEE7; }
+body { font-family: "JetBrains Mono", "IBM Plex Mono", SFMono-Regular, Menlo, monospace; font-size: 12px; }
+* { scrollbar-width: thin; scrollbar-color: #1C2633 #0D121A; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: #1C2633; border-radius: 4px; }
+
+@layer components {
+  .panel { @apply bg-term-panel border border-term-border rounded-sm flex flex-col min-h-0 overflow-hidden; }
+  .panel-head { @apply flex items-center justify-between px-2 py-1 border-b border-term-border text-[10px] uppercase tracking-widest text-term-amber; }
+  .panel-body { @apply p-2 overflow-auto flex-1 min-h-0; }
+  .kbd { @apply inline-block px-1 border border-term-border rounded text-[10px] text-term-dim bg-term-bg; }
+  .btn { @apply px-2 py-1 border border-term-border rounded-sm text-[11px] uppercase tracking-wider hover:border-term-amber hover:text-term-amber transition-colors disabled:opacity-40 disabled:hover:border-term-border disabled:hover:text-term-text; }
+  .btn-primary { @apply bg-term-amber text-black border-term-amber hover:bg-yellow-400 hover:text-black; }
+  .btn-danger { @apply border-term-red text-term-red hover:bg-term-red hover:text-black; }
+  .btn-success { @apply border-term-green text-term-green hover:bg-term-green hover:text-black; }
+  .input { @apply bg-term-bg border border-term-border rounded-sm px-2 py-1 text-term-text outline-none focus:border-term-amber w-full; }
+  .table-term { @apply w-full text-[11px]; }
+  .table-term th { @apply text-left text-term-dim font-normal uppercase tracking-wider px-2 py-1 border-b border-term-border sticky top-0 bg-term-panel cursor-pointer select-none; }
+  .table-term td { @apply px-2 py-1 border-b border-term-border/50 whitespace-nowrap; }
+  .table-term tr:hover td { @apply bg-term-bg; }
+  .up { @apply text-term-green; }
+  .down { @apply text-term-red; }
+  .tag { @apply inline-block px-1.5 py-0.5 rounded-sm text-[10px] uppercase tracking-wider border; }
+}

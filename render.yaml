@@ -1,0 +1,71 @@
+# Render Blueprint for AstraTrade Pro's backend.
+#
+# Usage: push this repo to GitHub, then on https://dashboard.render.com choose
+# "New +" -> "Blueprint", point it at the repo, and Render will read this file
+# to provision the web service and the Postgres database together.
+#
+# After the first deploy, set the remaining secrets (anything not listed with
+# a `value` below) in the Render dashboard under this service's Environment
+# tab: NEWS_API_KEY, FRED_API_KEY, ALPHA_VANTAGE_API_KEY, QUIVER_API_KEY,
+# ALPACA_API_KEY, ALPACA_SECRET_KEY, OPENAI_API_KEY / ANTHROPIC_API_KEY.
+
+services:
+  - type: web
+    name: astratrade-pro-api
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: JWT_EXPIRE_MINUTES
+        value: "1440"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: astratrade-pro-db
+          property: connectionString
+      - key: CORS_ORIGINS
+        sync: false  # set to your deployed Vercel URL(s), comma-separated
+      - key: LLM_PROVIDER
+        value: mock  # switch to openai or anthropic once you add a key below
+      - key: LLM_MODEL
+        value: gpt-4o-mini
+      - key: MARKET_DATA_SOURCE
+        value: ""  # blank = yfinance (default, no key needed)
+      - key: ALPACA_PAPER
+        value: "true"
+      - key: ALPACA_LIVE_TRADING_ENABLED
+        value: "false"
+      - key: SEC_USER_AGENT
+        sync: false  # e.g. "AstraTradePro you@example.com" -- SEC requires a real contact
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      # Secrets to fill in via the Render dashboard (left blank here on purpose):
+      - key: NEWS_API_KEY
+        sync: false
+      - key: FRED_API_KEY
+        sync: false
+      - key: ALPHA_VANTAGE_API_KEY
+        sync: false
+      - key: QUIVER_API_KEY
+        sync: false
+      - key: ALPACA_API_KEY
+        sync: false
+      - key: ALPACA_SECRET_KEY
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+
+databases:
+  - name: astratrade-pro-db
+    plan: starter
+    databaseName: astratrade
+    user: astratrade

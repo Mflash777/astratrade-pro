@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: astratrade
+      POSTGRES_PASSWORD: astratrade
+      POSTGRES_DB: astratrade
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+    ports: ["5432:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U astratrade"]
+      interval: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: .
+      dockerfile: infra/Dockerfile.backend
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://astratrade:astratrade@db:5432/astratrade
+      CORS_ORIGINS: http://localhost:3000,http://localhost:8080
+    ports: ["8000:8000"]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: .
+      dockerfile: infra/Dockerfile.frontend
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:8000
+    ports: ["8080:80"]
+    depends_on: [backend]
+
+volumes:
+  pgdata:
